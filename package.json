@@ -1,0 +1,45 @@
+{
+  "name": "uupaa.color.js",
+  "version": "0.0.0",
+  "description": "Color functions.",
+  "url": "https://github.com/uupaa/Color.js",
+  "keywords": ["uupaa", "WebModule", "Unstable"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uupaa/Color.js.git"
+  },
+  "scripts": {
+    "sync": "node ../WebModule/run/sync.js; npm update; node ../WebModule/run/page.js",
+    "min": "node ../WebModule/run/minify.js --verbose --strict --keep --pretty",
+    "build": "node ../WebModule/run/minify.js --verbose --strict --keep --module",
+    "watch": "node ../WebModule/run/watch.js --verbose --run hint",
+    "page": "node ../WebModule/run/page.js --verbose",
+    "test": "npm run min; npm run node; npm run browser",
+    "node": "NODE_ENV=production NODE_PATH=lib node --harmony test/index.node.js",
+    "noded": "NODE_ENV=production NODE_PATH=lib node --debug-brk --harmony test/index.node.js",
+    "browser": "open http://localhost:8000/Color.js/test/index.html",
+    "sim": "node ../WebModule/run/sim.js http://localhost:8000/Color.js/test/index.html",
+    "simx": "node ../WebModule/run/sim.js stop",
+    "hint": "jshint lib/*.js",
+    "score": "node ../WebModule/run/score.js; open lint/plato/index.html",
+    "patch": "node ../WebModule/run/patch.js",
+    "setup": "node ../WebModule/run/setup.js",
+    "start": "cd ../; Python -m SimpleHTTPServer 8000 &",
+    "stop": "killall -- Python -m SimpleHTTPServer 8000; exit 0"
+  },
+  "webmodule": {
+    "develop": false,
+    "label": ["@dev"],
+    "all": {
+      "source": ["lib/Color.js", "lib/ColorDict.js"],
+      "output": "release/Color.min.js"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "lib": "./lib/",
+  "main": "./index.js",
+  "author": "uupaa",
+  "license": "MIT",
+  "contributors": []
+}
