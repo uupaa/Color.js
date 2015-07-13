@@ -20,7 +20,7 @@ console.log( new Color("red").toString(true)        );  // -> "#ff0000"
 console.log( new Color("rgba(255,0,0,1.0)").R       );  // -> 255
 console.log( new Color("red").r                     );  // -> 1.0
 console.log( new Color("red").A                     );  // -> 255
-console.log( new Color("red").a                     );  // -> 255
+console.log( new Color("red").a                     );  // -> 1.0
 console.log( new Color("red").RGBA                  );  // -> [255, 0, 0, 255]
 console.log( new Color("red").HSLA                  );  // -> [0, 1, 0.5, 255]
 console.log( new Color("red").HSVA                  );  // -> [0, 1, 1, 255]
