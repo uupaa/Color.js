@@ -41,10 +41,14 @@ Color.HSVA_RGBA( Color.RGBA_HSVA(pixelData, offset) );  // -> [255, 0, 0, 255]
 Color.YUVA_RGBA( Color.RGBA_YUVA(pixelData, offset) );  // -> [255, 0, 0, 255]
 
 // --- effect ---
-var hslAEffect = [ 120, 0, 0, 0 ];
+var hue        = 120; // Hue effect.        -360..+360
+var saturation = 0;   // Saturation effect. -1.0..+1.0
+var lightness  = 0;   // Lightness effect.  -1.0..+1.0
+var alpha      = 0;   // Alpha effect.         0..255
+var hslA_effect = [ hue, saturation, lightness, alpha ];
 
 Color.reverse(pixelData);                               // -> [0, 255, 255, 255, ...]
-Color.effect(pixelData, hslAEffect);                    // -> [0, 255,   0, 255, ...]
+Color.effect(pixelData, hslA_effect);                   // -> [0, 255,   0, 255, ...]
 Color.sepia(pixelData);                                 // -> [96, 74, 35, 255, ...]
 Color.gray(new Color("pink").RGBA);                     // -> [192, 192, 192, 255]
 
