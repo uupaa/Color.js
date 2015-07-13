@@ -73,18 +73,18 @@ function testColor_parse(test, pass, miss) {
 
         m( new Color("hsla( 360, 100%, 100%, 1.0) ").RGBA, [255, 255, 255, 255] ),
         m( new Color("HSLA(   0,   0,    0%, 0  ) ").RGBA, [  0,   0,   0,   0] ),
-        m( new Color("hsl(100, 50%, 50%)").RGBA,           [106, 191,  63, 255] ),
+        m( new Color("hsl(100, 50%, 50%)").RGBA,           [106, 191,  64, 255] ),
 
         m( new Color("hsva( 360, 100%, 100%, 1.0) ").RGBA, [255,   0,   0, 255] ),
         m( new Color("HSVA(   0,   0,    0%, 0  ) ").RGBA, [  0,   0,   0,   0] ),
-        m( new Color("hsv(100, 50%, 50%)").RGBA,           [ 85, 127,  63, 255] ),
+        m( new Color("hsv(100, 50%, 50%)").RGBA,           [ 85, 128,  64, 255] ),
 
         m( new Color("red").RGBA,                          [255,   0,   0, 255]),
         m( new Color("lime").RGBA,                         [  0, 255,   0, 255]),
         m( new Color("blue").RGBA,                         [  0,   0, 255, 255]),
     ];
     function m(valueArray, validArray) {
-        return valueArray.every(function(v, i) {
+        return [].slice.call(valueArray).every(function(v, i) {
             return v.toFixed(2) === validArray[i].toFixed(2);
         });
     }
@@ -171,22 +171,22 @@ function testColor_RGBA(test, pass, miss) {
 
 function testColor_HSLA(test, pass, miss) {
     var results = {
-        "black":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,    0, 255] ) ), [   0,    0,    0, 255] ),
-        "white":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,  255,  255, 255] ) ), [ 255,  255,  255, 255] ),
-        "red":      m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,    0,    0, 255] ) ), [ 255,    0,    0, 255] ),
-        "lime":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  255,    0, 255] ) ), [   0,  255,    0, 255] ),
-        "blue":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,  255, 255] ) ), [   0,    0,  255, 255] ),
-        "yellow":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,  255,    0, 255] ) ), [ 255,  255,    0, 255] ),
-        "cyan":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  255,  255, 255] ) ), [   0,  255,  255, 255] ),
-        "magenta":  m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,    0,  255, 255] ) ), [ 255,    0,  255, 255] ),
-        "silver":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 192,  192,  192, 255] ) ), [ 192,  192,  192, 255] ),
-        "gray":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,  127,  127, 255] ) ), [ 127,  127,  127, 255] ),
-        "maroon":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,    0,    0, 255] ) ), [ 127,    0,    0, 255] ),
-        "olive":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,  127,    0, 255] ) ), [ 127,  127,    0, 255] ),
-        "green":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  127,    0, 255] ) ), [   0,  127,    0, 255] ),
-        "purple":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,    0,  127, 255] ) ), [ 127,    0,  127, 255] ),
-        "teal":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  127,  127, 255] ) ), [   0,  127,  127, 255] ),
-        "navy":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,  127, 255] ) ), [   0,    0,  127, 255] ),
+        "black":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,  255,    0, 255] ) ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,    0,  255, 255] ) ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 255,  255,    0, 255] ) ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,  255,  255, 255] ) ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 255,    0,  255, 255] ) ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 192,  192,  192, 255] ) ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 127,  127,  127, 255] ) ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 127,    0,    0, 255] ) ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 127,  127,    0, 255] ) ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,  127,    0, 255] ) ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [ 127,    0,  127, 255] ) ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ) ), [   0,    0,  127, 255] ),
     };
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {
@@ -211,22 +211,22 @@ function testColor_HSLA(test, pass, miss) {
 
 function testColor_HSVA(test, pass, miss) {
     var results = {
-        "black":    m( Color.RGBA_HSVA( [   0,    0,    0, 255] ), [   0,   0,   0,    255] ),
-        "white":    m( Color.RGBA_HSVA( [ 255,  255,  255, 255] ), [   0,   0,   1,    255] ),
-        "red":      m( Color.RGBA_HSVA( [ 255,    0,    0, 255] ), [   0,   1,   1,    255] ),
-        "lime":     m( Color.RGBA_HSVA( [   0,  255,    0, 255] ), [ 120,   1,   1,    255] ),
-        "blue":     m( Color.RGBA_HSVA( [   0,    0,  255, 255] ), [ 240,   1,   1,    255] ),
-        "yellow":   m( Color.RGBA_HSVA( [ 255,  255,    0, 255] ), [  60,   1,   1,    255] ),
-        "cyan":     m( Color.RGBA_HSVA( [   0,  255,  255, 255] ), [ 180,   1,   1,    255] ),
-        "magenta":  m( Color.RGBA_HSVA( [ 255,    0,  255, 255] ), [ 300,   1,   1,    255] ),
-        "silver":   m( Color.RGBA_HSVA( [ 192,  192,  192, 255] ), [   0,   0,   0.75, 255] ),
-        "gray":     m( Color.RGBA_HSVA( [ 127,  127,  127, 255] ), [   0,   0,   0.5,  255] ),
-        "maroon":   m( Color.RGBA_HSVA( [ 127,    0,    0, 255] ), [   0,   1,   0.5,  255] ),
-        "olive":    m( Color.RGBA_HSVA( [ 127,  127,    0, 255] ), [  60,   1,   0.5,  255] ),
-        "green":    m( Color.RGBA_HSVA( [   0,  127,    0, 255] ), [ 120,   1,   0.5,  255] ),
-        "purple":   m( Color.RGBA_HSVA( [ 127,    0,  127, 255] ), [ 300,   1,   0.5,  255] ),
-        "teal":     m( Color.RGBA_HSVA( [   0,  127,  127, 255] ), [ 180,   1,   0.5,  255] ),
-        "navy":     m( Color.RGBA_HSVA( [   0,    0,  127, 255] ), [ 240,   1,   0.5,  255] ),
+        "black":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ), [   0,   0,   0,    255] ),
+        "white":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ), [   0,   0,   1,    255] ),
+        "red":      m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ), [   0,   1,   1,    255] ),
+        "lime":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  255,    0, 255] ) ), [ 120,   1,   1,    255] ),
+        "blue":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,  255, 255] ) ), [ 240,   1,   1,    255] ),
+        "yellow":   m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,  255,    0, 255] ) ), [  60,   1,   1,    255] ),
+        "cyan":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  255,  255, 255] ) ), [ 180,   1,   1,    255] ),
+        "magenta":  m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,    0,  255, 255] ) ), [ 300,   1,   1,    255] ),
+        "silver":   m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 192,  192,  192, 255] ) ), [   0,   0,   0.75, 255] ),
+        "gray":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,  127,  127, 255] ) ), [   0,   0,   0.5,  255] ),
+        "maroon":   m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,    0,    0, 255] ) ), [   0,   1,   0.5,  255] ),
+        "olive":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,  127,    0, 255] ) ), [  60,   1,   0.5,  255] ),
+        "green":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  127,    0, 255] ) ), [ 120,   1,   0.5,  255] ),
+        "purple":   m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,    0,  127, 255] ) ), [ 300,   1,   0.5,  255] ),
+        "teal":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ), [ 180,   1,   0.5,  255] ),
+        "navy":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ), [ 240,   1,   0.5,  255] ),
     };
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {
@@ -251,22 +251,22 @@ function testColor_HSVA(test, pass, miss) {
 
 function testColor_YUVA(test, pass, miss) {
     var results = {
-        "black":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,    0, 255] ) ), [   0,    0,    0, 255] ),
-        "white":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,  255,  255, 255] ) ), [ 255,  255,  255, 255] ),
-        "red":      m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,    0,    0, 255] ) ), [ 255,    0,    0, 255] ),
-        "lime":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  255,    0, 255] ) ), [   0,  255,    0, 255] ),
-        "blue":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,  255, 255] ) ), [   0,    0,  255, 255] ),
-        "yellow":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,  255,    0, 255] ) ), [ 255,  255,    0, 255] ),
-        "cyan":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  255,  255, 255] ) ), [   0,  255,  255, 255] ),
-        "magenta":  m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,    0,  255, 255] ) ), [ 255,    0,  255, 255] ),
-        "silver":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 192,  192,  192, 255] ) ), [ 192,  192,  192, 255] ),
-        "gray":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,  127,  127, 255] ) ), [ 127,  127,  127, 255] ),
-        "maroon":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,    0,    0, 255] ) ), [ 127,    0,    0, 255] ),
-        "olive":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,  127,    0, 255] ) ), [ 127,  127,    0, 255] ),
-        "green":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  127,    0, 255] ) ), [   0,  127,    0, 255] ),
-        "purple":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,    0,  127, 255] ) ), [ 127,    0,  127, 255] ),
-        "teal":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  127,  127, 255] ) ), [   0,  127,  127, 255] ),
-        "navy":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,  127, 255] ) ), [   0,    0,  127, 255] ),
+        "black":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  255,    0, 255] ) ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,  255, 255] ) ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,  255,    0, 255] ) ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  255,  255, 255] ) ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,    0,  255, 255] ) ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 192,  192,  192, 255] ) ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,  127,  127, 255] ) ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,    0,    0, 255] ) ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,  127,    0, 255] ) ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  127,    0, 255] ) ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,    0,  127, 255] ) ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ) ), [   0,    0,  127, 255] ),
     };
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {
@@ -294,16 +294,16 @@ function testColor_YUVA(test, pass, miss) {
 
 function testColor_effect(test, pass, miss) {
     var results = [
-        m( Color.sepia([128, 60,255,255, 128, 62,255,255]), [122,100, 61,255, 123,101, 62,255]),
-        m( Color.gray( [128, 60,255,255, 128, 62,255,255]), [ 60, 60, 60,255,  62, 62, 62,255]),
-        m( Color.reverse([255,255,255, 255]), [  0,  0,  0,255]),
-        m( Color.reverse([127,127,127, 0]),   [128,128,128,  0]),
-        m( Color.reverse([  0,  0,  0, 0]),   [255,255,255,  0]),
-        m( Color.effect([ 128,255,255, 0], [120,0,0,0]), [255,128,255, 0]),
-        m( Color.effect([ 128,255,255, 0], [240,0,0,0]), [255,255,128, 0]),
-        m( Color.effect([ 128,255,255, 0], [360,0,0,0]), [128,255,255, 0]),
-        m( Color.effect([ 128,255,255, 0], [120,0.5,0,0]), [255,128,255, 0]),
-        m( Color.effect([ 128,255,255, 0], [120,-0.5,0,0]),[223,159,223, 0]),
+        m( Color.sepia(  new Uint8ClampedArray( [128, 60,255,255, 128, 62,255,255]) ), [123,100, 61,255, 124,102, 63,255]),
+        m( Color.gray(   new Uint8ClampedArray( [128, 60,255,255, 128, 62,255,255]) ), [ 60, 60, 60,255,  62, 62, 62,255]),
+        m( Color.reverse(new Uint8ClampedArray( [255,255,255,255                 ]) ), [  0,  0,  0,255]),
+        m( Color.reverse(new Uint8ClampedArray( [127,127,127,  0                 ]) ), [128,128,128,  0]),
+        m( Color.reverse(new Uint8ClampedArray( [  0,  0,  0,  0                 ]) ), [255,255,255,  0]),
+        m( Color.effect( new Uint8ClampedArray( [128,255,255,  0] ), [120,0,0,0]    ), [255,128,255,  0]),
+        m( Color.effect( new Uint8ClampedArray( [128,255,255,  0] ), [240,0,0,0]    ), [255,255,128,  0]),
+        m( Color.effect( new Uint8ClampedArray( [128,255,255,  0] ), [360,0,0,0]    ), [128,255,255,  0]),
+        m( Color.effect( new Uint8ClampedArray( [128,255,255,  0] ), [120,0.5,0,0]  ), [255,128,255,  0]),
+        m( Color.effect( new Uint8ClampedArray( [128,255,255,  0] ), [120,-0.5,0,0] ), [223,160,223,  0]),
     ];
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {

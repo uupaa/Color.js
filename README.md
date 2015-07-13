@@ -24,28 +24,27 @@ console.log( new Color("red").a                     );  // -> 1.0
 console.log( new Color("red").RGBA                  );  // -> [255, 0, 0, 255]
 console.log( new Color("red").HSLA                  );  // -> [0, 1, 0.5, 255]
 console.log( new Color("red").HSVA                  );  // -> [0, 1, 1, 255]
-console.log( new Color("red").YUVA                  );  // -> [0.299, -0.168736, 0.5, 255]
+console.log( new Color("red").YUVA                  );  // -> [0.29899999499320984, -0.16873599588871002, 0.5, 255]
 console.log( new Color("hsla(360,100%,100%,1)").RGBA);  // -> [255, 255, 255, 255]
 console.log( new Color("hsva(360,100%,100%,1)").RGBA);  // -> [255,   0,   0, 255]
 
 // --- convert ---
-var pixelData = [255, 0, 0, 255, ... ];
-var offset = 0;
+var pixelData = new Uint8ClampedArray([255, 0, 0, 255]);
 
-Color.RGBA_HSLA(pixelData, offset);                     // -> [0, 1, 0.5, 255]
-Color.RGBA_HSVA(pixelData, offset);                     // -> [0, 1, 1, 255]
-Color.RGBA_YUVA(pixelData, offset);                     // -> [0.299, -0.168736, 0.5, 255]
+Color.RGBA_HSLA(pixelData);                     // -> [0, 1, 0.5, 255]
+Color.RGBA_HSVA(pixelData);                     // -> [0, 1, 1, 255]
+Color.RGBA_YUVA(pixelData);                     // -> [0.29899999499320984, -0.16873599588871002, 0.5, 255]
 
-Color.HSLA_RGBA( Color.RGBA_HSLA(pixelData, offset) );  // -> [255, 0, 0, 255]
-Color.HSVA_RGBA( Color.RGBA_HSVA(pixelData, offset) );  // -> [255, 0, 0, 255]
-Color.YUVA_RGBA( Color.RGBA_YUVA(pixelData, offset) );  // -> [255, 0, 0, 255]
+Color.HSLA_RGBA( Color.RGBA_HSLA(pixelData) );  // -> [255, 0, 0, 255]
+Color.HSVA_RGBA( Color.RGBA_HSVA(pixelData) );  // -> [255, 0, 0, 255]
+Color.YUVA_RGBA( Color.RGBA_YUVA(pixelData) );  // -> [255, 0, 0, 255]
 
 // --- effect ---
 var hue        = 120; // Hue effect.        -360..+360
 var saturation = 0;   // Saturation effect. -1.0..+1.0
 var lightness  = 0;   // Lightness effect.  -1.0..+1.0
 var alpha      = 0;   // Alpha effect.         0..255
-var hslA_effect = [ hue, saturation, lightness, alpha ];
+var hslA_effect = new Float32Array([ hue, saturation, lightness, alpha ]);
 
 Color.reverse(pixelData);                               // -> [0, 255, 255, 255, ...]
 Color.effect(pixelData, hslA_effect);                   // -> [0, 255,   0, 255, ...]
