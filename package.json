@@ -10,17 +10,19 @@
   },
   "scripts": {
     "sync": "node ../WebModule/run/sync.js; npm update; node ../WebModule/run/page.js",
+    "wiki": "node ../WebModule/run/wiki.js",
     "min": "node ../WebModule/run/minify.js --verbose --strict --keep --pretty",
-    "build": "node ../WebModule/run/minify.js --verbose --strict --keep --module",
-    "watch": "node ../WebModule/run/watch.js --verbose --run hint",
+    "build": "node ../WebModule/run/minify.js --verbose --strict --keep --release",
+    "watch": "node ../WebModule/run/watch.js --verbose --run lint",
     "page": "node ../WebModule/run/page.js --verbose",
     "test": "npm run min; npm run node; npm run browser",
-    "node": "NODE_ENV=production NODE_PATH=lib node --harmony test/index.node.js",
-    "noded": "NODE_ENV=production NODE_PATH=lib node --debug-brk --harmony test/index.node.js",
+    "node": "NODE_ENV=production NODE_PATH=lib node --harmony test/node.js",
+    "noded": "NODE_ENV=production NODE_PATH=lib node --debug-brk --harmony test/node.js",
     "browser": "open http://localhost:8000/Color.js/test/index.html",
+    "add-src": "node ../WebModule/run/add-src.js",
     "sim": "node ../WebModule/run/sim.js http://localhost:8000/Color.js/test/index.html",
     "simx": "node ../WebModule/run/sim.js stop",
-    "hint": "jshint lib/*.js",
+    "lint": "eslint lib/*.js",
     "score": "node ../WebModule/run/score.js; open lint/plato/index.html",
     "patch": "node ../WebModule/run/patch.js",
     "setup": "node ../WebModule/run/setup.js",
@@ -30,9 +32,21 @@
   "webmodule": {
     "develop": false,
     "label": ["@dev"],
-    "all": {
-      "source": ["lib/Color.js", "lib/ColorDict.js"],
-      "output": "release/Color.min.js"
+    "browser": {
+      "source": ["lib/ColorCatalog.js", "lib/Color.js"],
+      "output": "release/Color.b.min.js"
+    },
+    "worker": {
+      "source": ["lib/ColorCatalog.js", "lib/Color.js"],
+      "output": "release/Color.w.min.js"
+    },
+    "node": {
+      "source": ["lib/ColorCatalog.js", "lib/Color.js"],
+      "output": "release/Color.n.min.js"
+    },
+    "nw": {
+      "source": ["lib/ColorCatalog.js", "lib/Color.js"],
+      "output": "release/Color.nw.min.js"
     }
   },
   "dependencies": {},

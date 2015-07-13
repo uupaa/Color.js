@@ -1,48 +1,88 @@
 var ModuleTestColor = (function(global) {
 
-var _runOnNode = "process" in global;
-var _runOnWorker = "WorkerLocation" in global;
-var _runOnBrowser = "document" in global;
+global["BENCHMARK"] = false;
 
-return new Test("Color", {
-        disable:    false,
-        browser:    true,
-        worker:     true,
-        node:       true,
-        button:     true,
-        both:       true, // test the primary module and secondary module
+var test = new Test("Color", {
+        disable:    false, // disable all tests.
+        browser:    true,  // enable browser test.
+        worker:     true,  // enable worker test.
+        node:       true,  // enable node test.
+        nw:         true,  // enable nw.js test.
+        button:     true,  // show button.
+        both:       true,  // test the primary and secondary modules.
+        ignoreError:false, // ignore error.
+        callback:   function() {
+        },
+        errorback:  function(error) {
+        }
     }).add([
+        testColor_getter,
         testColor_parse,
-        testColor_gray,
-        testColor_sepia,
-        testColor_reverse,
+        testColor_toString,
+        testColor_RGBA,
+        testColor_HSLA,
+        testColor_HSVA,
+        testColor_YUVA,
+        testColor_effect,
+    ]);
 
-        testRGBA_HSLA,
-        testHSLA_RGBA,
-        testRGBA_HSVA,
-        testHSVA_RGBA,
+if (IN_BROWSER || IN_NW) {
+    test.add([
+        // browser and node-webkit test
+    ]);
+} else if (IN_WORKER) {
+    test.add([
+        // worker test
+    ]);
+} else if (IN_NODE) {
+    test.add([
+        // node.js and io.js test
+    ]);
+}
 
-        testYUVA_codec,
-    ]).run().clone();
+// --- test cases ------------------------------------------
+function testColor_getter(test, pass, miss) {
+    var results = [
+        new Color("red").R === 255,
+        new Color("lime").G === 255,
+        new Color("blue").B === 255,
+        new Color("white").A === 255,
+        new Color("transparent").A === 0,
+        new Color("red").r === 1.0,
+        new Color("lime").g === 1.0,
+        new Color("blue").b === 1.0,
+        new Color("white").a === 1.0,
+        new Color("transparent").a === 0,
+    ];
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
 
 function testColor_parse(test, pass, miss) {
-    var results = {
-        "0":  m( Color.parseRGBA("rgba( 255, 255, 255, 1.0) "),   [1, 1, 1, 1] ),
-        "1":  m( Color.parseRGBA("RGBA(   0,   0,   0,   0) "),   [0, 0, 0, 0] ),
-        "2":  m( Color.parseRGBA("rgb(127, 127, 127)"),           [0.5, 0.5, 0.5, 1.0]),
+    var results = [
+        m( new Color("rgba( 255, 255, 255, 1.0) ").RGBA,   [255, 255, 255, 255] ),
+        m( new Color("RGBA(   0,   0,   0,   0) ").RGBA,   [  0,   0,   0,   0] ),
+        m( new Color("rgb(127, 127, 127)").RGBA,           [127, 127, 127, 255] ),
 
-        "10": m( Color.parseHSLA("hsla( 360, 100%, 100%, 1.0) "), [360, 1, 1, 1] ),
-        "11": m( Color.parseHSLA("HSLA(   0,   0,    0%, 0  ) "), [  0, 0, 0, 0] ),
-        "12": m( Color.parseHSLA("hsl(100, 50%, 50%)"),           [100, 0.5, 0.5, 1.0]),
+        m( new Color("hsla( 360, 100%, 100%, 1.0) ").RGBA, [255, 255, 255, 255] ),
+        m( new Color("HSLA(   0,   0,    0%, 0  ) ").RGBA, [  0,   0,   0,   0] ),
+        m( new Color("hsl(100, 50%, 50%)").RGBA,           [106, 191,  63, 255] ),
 
-        "20": m( Color.parseHSVA("hsva( 360, 100%, 100%, 1.0) "), [360, 1, 1, 1] ),
-        "21": m( Color.parseHSVA("HSVA(   0,   0,    0%, 0  ) "), [  0, 0, 0, 0] ),
-        "22": m( Color.parseHSVA("hsv(100, 50%, 50%)"),           [100, 0.5, 0.5, 1.0]),
+        m( new Color("hsva( 360, 100%, 100%, 1.0) ").RGBA, [255,   0,   0, 255] ),
+        m( new Color("HSVA(   0,   0,    0%, 0  ) ").RGBA, [  0,   0,   0,   0] ),
+        m( new Color("hsv(100, 50%, 50%)").RGBA,           [ 85, 127,  63, 255] ),
 
-        "30": m( new Color("red").toArray(true),                  [1.0, 0.0, 0.0, 1.0]),
-        "31": m( new Color("lime").toArray(true),                [0.0, 1.0, 0.0, 1.0]),
-        "32": m( new Color("blue").toArray(true),                 [0.0, 0.0, 1.0, 1.0]),
-    };
+        m( new Color("red").RGBA,                          [255,   0,   0, 255]),
+        m( new Color("lime").RGBA,                         [  0, 255,   0, 255]),
+        m( new Color("blue").RGBA,                         [  0,   0, 255, 255]),
+    ];
     function m(valueArray, validArray) {
         return valueArray.every(function(v, i) {
             return v.toFixed(2) === validArray[i].toFixed(2);
@@ -59,77 +99,20 @@ function testColor_parse(test, pass, miss) {
     }
 }
 
-function testColor_gray(test, pass, miss) {
-    var results = {
-        "0": m( new Color([255,255,255, 1]).gray(), [255,255,255,1]),
-        "1": m( new Color([  0,255,  0, 0]).gray(), [255,255,255,0]),
-        "2": m( new Color([  0,  0,  0, 0]).gray(), [  0,  0,  0,0]),
-    };
-    function m(valueArray, validArray) {
-        return valueArray.toArray().every(function(v, i) {
-            return v.toFixed(2) === validArray[i].toFixed(2);
-        });
-    }
-
-    var result = JSON.stringify(results, null, 2);
-    console.log(result);
-
-    if (/false/.test(result)) {
-        test.done(miss());
-    } else {
-        test.done(pass());
-    }
-}
-
-function testColor_sepia(test, pass, miss) {
-    var rgba = new Color([255,255,255,1]).sepia();
-
-    console.log(rgba);
-
-    test.done(pass());
-}
-
-function testColor_reverse(test, pass, miss) {
-    var results = {
-        "0": m( new Color([255,255,255, 1]).reverse(), [  0,  0,  0,1]),
-        "1": m( new Color([127,127,127, 0]).reverse(), [128,128,128,0]),
-        "2": m( new Color([  0,  0,  0, 0]).reverse(), [255,255,255,0]),
-    };
-    function m(valueArray, validArray) {
-        return valueArray.toArray().every(function(v, i) {
-            return v.toFixed(2) === validArray[i].toFixed(2);
-        });
-    }
-
-    var result = JSON.stringify(results, null, 2);
-    console.log(result);
-
-    if (/false/.test(result)) {
-        test.done(miss());
-    } else {
-        test.done(pass());
-    }
-}
-
-function testRGBA_HSLA(test, pass, miss) {
-    var results = {
-        "black":    m( Color.RGBA_HSLA( [  0,   0,   0, 1] ), [  0, 0, 0,   1] ),
-        "white":    m( Color.RGBA_HSLA( [  1,   1,   1, 1] ), [  0, 0, 1,   1] ),
-        "red":      m( Color.RGBA_HSLA( [  1,   0,   0, 1] ), [  0, 1, 0.5, 1] ),
-        "lime":     m( Color.RGBA_HSLA( [  0,   1,   0, 1] ), [120, 1, 0.5, 1] ),
-        "blue":     m( Color.RGBA_HSLA( [  0,   0,   1, 1] ), [240, 1, 0.5, 1] ),
-        "yellow":   m( Color.RGBA_HSLA( [  1,   1,   0, 1] ), [ 60, 1, 0.5, 1] ),
-        "cyan":     m( Color.RGBA_HSLA( [  0,   1,   1, 1] ), [180, 1, 0.5, 1] ),
-        "magenta":  m( Color.RGBA_HSLA( [  1,   0,   1, 1] ), [300, 1, 0.5, 1] ),
-        "silver":   m( Color.RGBA_HSLA( [0.75,0.75,0.75,1] ), [  0, 0, 0.75,1]),
-        "gray":     m( Color.RGBA_HSLA( [0.5, 0.5, 0.5, 1] ), [  0, 0, 0.5, 1] ),
-        "maroon":   m( Color.RGBA_HSLA( [0.5,   0,   0, 1] ), [  0, 1, 0.25,1] ),
-        "olive":    m( Color.RGBA_HSLA( [0.5, 0.5,   0, 1] ), [ 60, 1, 0.25,1] ),
-        "green":    m( Color.RGBA_HSLA( [  0, 0.5,   0, 1] ), [120, 1, 0.25,1] ),
-        "purple":   m( Color.RGBA_HSLA( [0.5,   0, 0.5, 1] ), [300, 1, 0.25,1] ),
-        "teal":     m( Color.RGBA_HSLA( [  0, 0.5, 0.5, 1] ), [180, 1, 0.25,1] ),
-        "navy":     m( Color.RGBA_HSLA( [  0,   0, 0.5, 1] ), [240, 1, 0.25,1] ),
-    };
+function testColor_toString(test, pass, miss) {
+    var results = [
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString(true) === "#ffffff",
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString() === "rgba(255,255,255,0.05)",
+        new Color("rgba( 255, 255, 255, 0.1)   ").toString() === "rgba(255,255,255,0.10)",
+        new Color("rgba( 255, 255, 255, 0.128) ").toString() === "rgba(255,255,255,0.13)",
+        new Color("rgba( 255, 255, 255, 0.2)   ").toString() === "rgba(255,255,255,0.20)",
+        new Color("rgba( 255, 255, 255, 0.21)  ").toString() === "rgba(255,255,255,0.21)",
+        new Color("rgba( 255, 255, 255, 0.25)  ").toString() === "rgba(255,255,255,0.25)",
+        new Color("rgba( 255, 255, 255, 0.499) ").toString() === "rgba(255,255,255,0.50)",
+        new Color("RGBA(   0,   0,   0,   0)   ").toString() === "rgba(0,0,0,0.00)",
+        new Color("rgb(127, 127, 127)          ").toString() === "rgba(127,127,127,1.00)",
+        new Color("rgb(127, 127, 127)          ").toString() === "rgba(127,127,127,1.00)",
+    ];
     function m(valueArray, validArray) {
         return valueArray.every(function(v, i) {
             return v.toFixed(2) === validArray[i].toFixed(2);
@@ -146,27 +129,184 @@ function testRGBA_HSLA(test, pass, miss) {
     }
 }
 
-function testHSLA_RGBA(test, pass, miss) {
+function testColor_RGBA(test, pass, miss) {
     var results = {
-        "black":    m( Color.HSLA_RGBA( [  0, 0, 0,   1] ), [  0,   0,   0, 1] ),
-        "white":    m( Color.HSLA_RGBA( [  0, 0, 1,   1] ), [  1,   1,   1, 1] ),
-        "red":      m( Color.HSLA_RGBA( [  0, 1, 0.5, 1] ), [  1,   0,   0, 1] ),
-        "lime":     m( Color.HSLA_RGBA( [120, 1, 0.5, 1] ), [  0,   1,   0, 1] ),
-        "blue":     m( Color.HSLA_RGBA( [240, 1, 0.5, 1] ), [  0,   0,   1, 1] ),
-        "yellow":   m( Color.HSLA_RGBA( [ 60, 1, 0.5, 1] ), [  1,   1,   0, 1] ),
-        "cyan":     m( Color.HSLA_RGBA( [180, 1, 0.5, 1] ), [  0,   1,   1, 1] ),
-        "magenta":  m( Color.HSLA_RGBA( [300, 1, 0.5, 1] ), [  1,   0,   1, 1] ),
-        "silver":   m( Color.HSLA_RGBA( [  0, 0, 0.75,1] ), [0.75,0.75,0.75,1] ),
-        "gray":     m( Color.HSLA_RGBA( [  0, 0, 0.5, 1] ), [0.5, 0.5, 0.5, 1] ),
-        "maroon":   m( Color.HSLA_RGBA( [  0, 1, 0.25,1] ), [0.5,   0,   0, 1] ),
-        "olive":    m( Color.HSLA_RGBA( [ 60, 1, 0.25,1] ), [0.5, 0.5,   0, 1] ),
-        "green":    m( Color.HSLA_RGBA( [120, 1, 0.25,1] ), [  0, 0.5,   0, 1] ),
-        "purple":   m( Color.HSLA_RGBA( [300, 1, 0.25,1] ), [0.5,   0, 0.5, 1] ),
-        "teal":     m( Color.HSLA_RGBA( [180, 1, 0.25,1] ), [  0, 0.5, 0.5, 1] ),
-        "navy":     m( Color.HSLA_RGBA( [240, 1, 0.25,1] ), [  0,   0, 0.5, 1] ),
+        "black":    m( new Color( "black"   ).RGBA, [   0,    0,    0, 255] ),
+        "white":    m( new Color( "white"   ).RGBA, [ 255,  255,  255, 255] ),
+        "red":      m( new Color( "red"     ).RGBA, [ 255,    0,    0, 255] ),
+        "lime":     m( new Color( "lime"    ).RGBA, [   0,  255,    0, 255] ),
+        "blue":     m( new Color( "blue"    ).RGBA, [   0,    0,  255, 255] ),
+        "yellow":   m( new Color( "yellow"  ).RGBA, [ 255,  255,    0, 255] ),
+        "cyan":     m( new Color( "cyan"    ).RGBA, [   0,  255,  255, 255] ),
+        "magenta":  m( new Color( "magenta" ).RGBA, [ 255,    0,  255, 255] ),
+        "silver":   m( new Color( "silver"  ).RGBA, [ 192,  192,  192, 255] ),
+        "gray":     m( new Color( "gray"    ).RGBA, [ 128,  128,  128, 255] ),
+        "maroon":   m( new Color( "maroon"  ).RGBA, [ 128,    0,    0, 255] ),
+        "olive":    m( new Color( "olive"   ).RGBA, [ 128,  128,    0, 255] ),
+        "green":    m( new Color( "green"   ).RGBA, [   0,  128,    0, 255] ),
+        "purple":   m( new Color( "purple"  ).RGBA, [ 128,    0,  128, 255] ),
+        "teal":     m( new Color( "teal"    ).RGBA, [   0,  128,  128, 255] ),
+        "navy":     m( new Color( "navy"    ).RGBA, [   0,    0,  128, 255] ),
     };
     function m(valueArray, validArray) {
-        return valueArray.every(function(v, i) {
+        return [].slice.call(valueArray).every(function(v, i) {
+            if (v.toFixed(2) === validArray[i].toFixed(2)) {
+                return true;
+            } else {
+                console.error(v, validArray[i]);
+                return false;
+            }
+        });
+    }
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
+
+function testColor_HSLA(test, pass, miss) {
+    var results = {
+        "black":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,    0, 255] ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,  255,  255, 255] ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,    0,    0, 255] ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  255,    0, 255] ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,  255, 255] ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,  255,    0, 255] ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  255,  255, 255] ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 255,    0,  255, 255] ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 192,  192,  192, 255] ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,  127,  127, 255] ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,    0,    0, 255] ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,  127,    0, 255] ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  127,    0, 255] ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.HSLA_RGBA( Color.RGBA_HSLA( [ 127,    0,  127, 255] ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,  127,  127, 255] ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.HSLA_RGBA( Color.RGBA_HSLA( [   0,    0,  127, 255] ) ), [   0,    0,  127, 255] ),
+    };
+    function m(valueArray, validArray) {
+        return [].slice.call(valueArray).every(function(v, i) {
+            if (v.toFixed(2) === validArray[i].toFixed(2)) {
+                return true;
+            } else {
+                console.error(v, validArray[i]);
+                return false;
+            }
+        });
+    }
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
+
+function testColor_HSVA(test, pass, miss) {
+    var results = {
+        "black":    m( Color.RGBA_HSVA( [   0,    0,    0, 255] ), [   0,   0,   0,    255] ),
+        "white":    m( Color.RGBA_HSVA( [ 255,  255,  255, 255] ), [   0,   0,   1,    255] ),
+        "red":      m( Color.RGBA_HSVA( [ 255,    0,    0, 255] ), [   0,   1,   1,    255] ),
+        "lime":     m( Color.RGBA_HSVA( [   0,  255,    0, 255] ), [ 120,   1,   1,    255] ),
+        "blue":     m( Color.RGBA_HSVA( [   0,    0,  255, 255] ), [ 240,   1,   1,    255] ),
+        "yellow":   m( Color.RGBA_HSVA( [ 255,  255,    0, 255] ), [  60,   1,   1,    255] ),
+        "cyan":     m( Color.RGBA_HSVA( [   0,  255,  255, 255] ), [ 180,   1,   1,    255] ),
+        "magenta":  m( Color.RGBA_HSVA( [ 255,    0,  255, 255] ), [ 300,   1,   1,    255] ),
+        "silver":   m( Color.RGBA_HSVA( [ 192,  192,  192, 255] ), [   0,   0,   0.75, 255] ),
+        "gray":     m( Color.RGBA_HSVA( [ 127,  127,  127, 255] ), [   0,   0,   0.5,  255] ),
+        "maroon":   m( Color.RGBA_HSVA( [ 127,    0,    0, 255] ), [   0,   1,   0.5,  255] ),
+        "olive":    m( Color.RGBA_HSVA( [ 127,  127,    0, 255] ), [  60,   1,   0.5,  255] ),
+        "green":    m( Color.RGBA_HSVA( [   0,  127,    0, 255] ), [ 120,   1,   0.5,  255] ),
+        "purple":   m( Color.RGBA_HSVA( [ 127,    0,  127, 255] ), [ 300,   1,   0.5,  255] ),
+        "teal":     m( Color.RGBA_HSVA( [   0,  127,  127, 255] ), [ 180,   1,   0.5,  255] ),
+        "navy":     m( Color.RGBA_HSVA( [   0,    0,  127, 255] ), [ 240,   1,   0.5,  255] ),
+    };
+    function m(valueArray, validArray) {
+        return [].slice.call(valueArray).every(function(v, i) {
+            if (v.toFixed(2) === validArray[i].toFixed(2)) {
+                return true;
+            } else {
+                console.error(v, validArray[i]);
+                return false;
+            }
+        });
+    }
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
+
+function testColor_YUVA(test, pass, miss) {
+    var results = {
+        "black":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,    0, 255] ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,  255,  255, 255] ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,    0,    0, 255] ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  255,    0, 255] ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,  255, 255] ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,  255,    0, 255] ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  255,  255, 255] ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 255,    0,  255, 255] ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 192,  192,  192, 255] ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,  127,  127, 255] ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,    0,    0, 255] ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,  127,    0, 255] ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  127,    0, 255] ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( [ 127,    0,  127, 255] ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,  127,  127, 255] ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( [   0,    0,  127, 255] ) ), [   0,    0,  127, 255] ),
+    };
+    function m(valueArray, validArray) {
+        return [].slice.call(valueArray).every(function(v, i) {
+            var v  = parseFloat(v.toFixed(2));
+            var vv = parseFloat(validArray[i].toFixed(2));
+
+            if (v - 1 <= vv && v + 1 >= vv) { // ±1 point
+                return true;
+            } else {
+                console.error(v, vv);
+                return false;
+            }
+        });
+    }
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
+
+function testColor_effect(test, pass, miss) {
+    var results = [
+        m( Color.sepia([128, 60,255,255, 128, 62,255,255]), [122,100, 61,255, 123,101, 62,255]),
+        m( Color.gray( [128, 60,255,255, 128, 62,255,255]), [ 60, 60, 60,255,  62, 62, 62,255]),
+        m( Color.reverse([255,255,255, 255]), [  0,  0,  0,255]),
+        m( Color.reverse([127,127,127, 0]),   [128,128,128,  0]),
+        m( Color.reverse([  0,  0,  0, 0]),   [255,255,255,  0]),
+        m( Color.effect([ 128,255,255, 0], [120,0,0,0]), [255,128,255, 0]),
+        m( Color.effect([ 128,255,255, 0], [240,0,0,0]), [255,255,128, 0]),
+        m( Color.effect([ 128,255,255, 0], [360,0,0,0]), [128,255,255, 0]),
+        m( Color.effect([ 128,255,255, 0], [120,0.5,0,0]), [255,128,255, 0]),
+        m( Color.effect([ 128,255,255, 0], [120,-0.5,0,0]),[223,159,223, 0]),
+    ];
+    function m(valueArray, validArray) {
+        return [].slice.call(valueArray).every(function(v, i) {
             return v.toFixed(2) === validArray[i].toFixed(2);
         });
     }
@@ -181,91 +321,7 @@ function testHSLA_RGBA(test, pass, miss) {
     }
 }
 
-function testRGBA_HSVA(test, pass, miss) {
-    var results = {
-        "black":    m( Color.RGBA_HSVA( [  0,   0,   0, 1] ), [  0, 0, 0,   1] ),
-        "white":    m( Color.RGBA_HSVA( [  1,   1,   1, 1] ), [  0, 0, 1,   1] ),
-        "red":      m( Color.RGBA_HSVA( [  1,   0,   0, 1] ), [  0, 1, 1,   1] ),
-        "lime":     m( Color.RGBA_HSVA( [  0,   1,   0, 1] ), [120, 1, 1,   1] ),
-        "blue":     m( Color.RGBA_HSVA( [  0,   0,   1, 1] ), [240, 1, 1,   1] ),
-        "yellow":   m( Color.RGBA_HSVA( [  1,   1,   0, 1] ), [ 60, 1, 1,   1] ),
-        "cyan":     m( Color.RGBA_HSVA( [  0,   1,   1, 1] ), [180, 1, 1,   1] ),
-        "magenta":  m( Color.RGBA_HSVA( [  1,   0,   1, 1] ), [300, 1, 1,   1] ),
-        "silver":   m( Color.RGBA_HSVA( [0.75,0.75,0.75,1] ), [  0, 0, 0.75,1]),
-        "gray":     m( Color.RGBA_HSVA( [0.5, 0.5, 0.5, 1] ), [  0, 0, 0.5, 1] ),
-        "maroon":   m( Color.RGBA_HSVA( [0.5,   0,   0, 1] ), [  0, 1, 0.5, 1] ),
-        "olive":    m( Color.RGBA_HSVA( [0.5, 0.5,   0, 1] ), [ 60, 1, 0.5, 1] ),
-        "green":    m( Color.RGBA_HSVA( [  0, 0.5,   0, 1] ), [120, 1, 0.5, 1] ),
-        "purple":   m( Color.RGBA_HSVA( [0.5,   0, 0.5, 1] ), [300, 1, 0.5, 1] ),
-        "teal":     m( Color.RGBA_HSVA( [  0, 0.5, 0.5, 1] ), [180, 1, 0.5, 1] ),
-        "navy":     m( Color.RGBA_HSVA( [  0,   0, 0.5, 1] ), [240, 1, 0.5, 1] ),
-    };
-    function m(valueArray, validArray) {
-        return valueArray.every(function(v, i) {
-            return v.toFixed(2) === validArray[i].toFixed(2);
-        });
-    }
+return test.run();
 
-    var result = JSON.stringify(results, null, 2);
-    console.log(result);
-
-    if (/false/.test(result)) {
-        test.done(miss());
-    } else {
-        test.done(pass());
-    }
-}
-
-function testHSVA_RGBA(test, pass, miss) {
-    var results = {
-        "black":    m( Color.HSVA_RGBA( [  0, 0, 0,   1] ), [  0,   0,   0, 1] ),
-        "white":    m( Color.HSVA_RGBA( [  0, 0, 1,   1] ), [  1,   1,   1, 1] ),
-        "red":      m( Color.HSVA_RGBA( [  0, 1, 1,   1] ), [  1,   0,   0, 1] ),
-        "lime":     m( Color.HSVA_RGBA( [120, 1, 1,   1] ), [  0,   1,   0, 1] ),
-        "blue":     m( Color.HSVA_RGBA( [240, 1, 1,   1] ), [  0,   0,   1, 1] ),
-        "yellow":   m( Color.HSVA_RGBA( [ 60, 1, 1,   1] ), [  1,   1,   0, 1] ),
-        "cyan":     m( Color.HSVA_RGBA( [180, 1, 1,   1] ), [  0,   1,   1, 1] ),
-        "magenta":  m( Color.HSVA_RGBA( [300, 1, 1,   1] ), [  1,   0,   1, 1] ),
-        "silver":   m( Color.HSVA_RGBA( [  0, 0, 0.75,1] ), [0.75,0.75,0.75,1] ),
-        "gray":     m( Color.HSVA_RGBA( [  0, 0, 0.5, 1] ), [0.5, 0.5, 0.5, 1] ),
-        "maroon":   m( Color.HSVA_RGBA( [  0, 1, 0.5, 1] ), [0.5,   0,   0, 1] ),
-        "olive":    m( Color.HSVA_RGBA( [ 60, 1, 0.5, 1] ), [0.5, 0.5,   0, 1] ),
-        "green":    m( Color.HSVA_RGBA( [120, 1, 0.5, 1] ), [  0, 0.5,   0, 1] ),
-        "purple":   m( Color.HSVA_RGBA( [300, 1, 0.5, 1] ), [0.5,   0, 0.5, 1] ),
-        "teal":     m( Color.HSVA_RGBA( [180, 1, 0.5, 1] ), [  0, 0.5, 0.5, 1] ),
-        "navy":     m( Color.HSVA_RGBA( [240, 1, 0.5, 1] ), [  0,   0, 0.5, 1] ),
-    };
-    function m(valueArray, validArray) {
-        return valueArray.every(function(v, i) {
-            return v.toFixed(2) === validArray[i].toFixed(2);
-        });
-    }
-
-    var result = JSON.stringify(results, null, 2);
-    console.log(result);
-
-    if (/false/.test(result)) {
-        test.done(miss());
-    } else {
-        test.done(pass());
-    }
-}
-
-function testYUVA_codec(test, pass, miss) {
-
-    var source = [1,1,1,1];
-    var yuva = Color.RGBA_YUVA(source);
-    var rgba = Color.YUVA_RGBA(yuva);
-
-    if (source[0].toFixed(2) === rgba[0].toFixed(2) &&
-        source[1].toFixed(2) === rgba[1].toFixed(2) &&
-        source[2].toFixed(2) === rgba[2].toFixed(2) &&
-        source[3].toFixed(2) === rgba[3].toFixed(2)) {
-        test.done(pass());
-    } else {
-        test.done(miss());
-    }
-}
-
-})((this || 0).self || global);
+})(GLOBAL);
 
