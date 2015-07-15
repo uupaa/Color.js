@@ -210,7 +210,7 @@ function testColor_HSLA(test, pass, miss) {
 }
 
 function testColor_HSVA(test, pass, miss) {
-    var results = {
+    var results1 = {
         "black":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ), [   0,   0,   0,    255] ),
         "white":    m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ), [   0,   0,   1,    255] ),
         "red":      m( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ), [   0,   1,   1,    255] ),
@@ -228,6 +228,24 @@ function testColor_HSVA(test, pass, miss) {
         "teal":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ), [ 180,   1,   0.5,  255] ),
         "navy":     m( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ), [ 240,   1,   0.5,  255] ),
     };
+    var results2 = {
+        "black":    m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  255,    0, 255] ) ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,  255, 255] ) ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,  255,    0, 255] ) ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  255,  255, 255] ) ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 255,    0,  255, 255] ) ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 192,  192,  192, 255] ) ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,  127,  127, 255] ) ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,    0,    0, 255] ) ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,  127,    0, 255] ) ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  127,    0, 255] ) ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [ 127,    0,  127, 255] ) ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.HSVA_RGBA( Color.RGBA_HSVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ) ), [   0,    0,  127, 255] ),
+    };
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {
             if (v.toFixed(2) === validArray[i].toFixed(2)) {
@@ -239,7 +257,7 @@ function testColor_HSVA(test, pass, miss) {
         });
     }
 
-    var result = JSON.stringify(results, null, 2);
+    var result = JSON.stringify(results1, null, 2) + JSON.stringify(results2, null, 2);
     console.log(result);
 
     if (/false/.test(result)) {
