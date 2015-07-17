@@ -16,7 +16,7 @@ Color functions.
 <script>
 
 console.log( new Color("red").toString()            );  // -> "rgba(255,0,0,1.00)"
-console.log( new Color("red").toString(true)        );  // -> "#ff0000"
+console.log( new Color("red").toString("#rrggbb")   );  // -> "#ff0000"
 console.log( new Color("rgba(255,0,0,1.0)").R       );  // -> 255
 console.log( new Color("red").r                     );  // -> 1.0
 console.log( new Color("red").A                     );  // -> 255
