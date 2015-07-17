@@ -101,7 +101,12 @@ function testColor_parse(test, pass, miss) {
 
 function testColor_toString(test, pass, miss) {
     var results = [
-        new Color("rgba( 255, 255, 255, 0.05)  ").toString(true) === "#ffffff",
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString("#rrggbb") === "#ffffff",
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString("rgba") === "rgba(255,255,255,0.05)",
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString("hsla") === "hsla(0,0%,100%,0.05)",
+        new Color("rgba( 255, 255, 255, 0.05)  ").toString("hsva") === "hsva(0,0%,100%,0.05)",
+        new Color(new Color("hsva(0,0%,100%,0.05)").toString("hsva")).toString() === "rgba(255,255,255,0.05)",
+        new Color(new Color("hsla(0,0%,100%,0.05)").toString("hsla")).toString() === "rgba(255,255,255,0.05)",
         new Color("rgba( 255, 255, 255, 0.05)  ").toString() === "rgba(255,255,255,0.05)",
         new Color("rgba( 255, 255, 255, 0.1)   ").toString() === "rgba(255,255,255,0.10)",
         new Color("rgba( 255, 255, 255, 0.128) ").toString() === "rgba(255,255,255,0.13)",
