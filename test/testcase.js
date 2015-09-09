@@ -24,6 +24,8 @@ var test = new Test("Color", {
         testColor_HSVA,
         testColor_YUVA,
         testColor_effect,
+        // --- LOW PRECISION ---
+        testColor_YUVA_LOW,
     ]);
 
 if (IN_BROWSER || IN_NW) {
@@ -291,6 +293,52 @@ function testColor_YUVA(test, pass, miss) {
         "teal":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ) ), [   0,  127,  127, 255] ),
         "navy":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ) ), [   0,    0,  127, 255] ),
     };
+    function m(valueArray, validArray) {
+        return [].slice.call(valueArray).every(function(v, i) {
+            var v  = parseFloat(v.toFixed(2));
+            var vv = parseFloat(validArray[i].toFixed(2));
+
+            if (v - 1 <= vv && v + 1 >= vv) { // ±1 point
+                return true;
+            } else {
+                console.error(v, vv);
+                return false;
+            }
+        });
+    }
+
+    var result = JSON.stringify(results, null, 2);
+    console.log(result);
+
+    if (/false/.test(result)) {
+        test.done(miss());
+    } else {
+        test.done(pass());
+    }
+}
+
+function testColor_YUVA_LOW(test, pass, miss) {
+    Color["LOW_PRECISION"] = true; // set
+    var results = {
+        "black":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,    0, 255] ) ) ), [   0,    0,    0, 255] ),
+        "white":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,  255,  255, 255] ) ) ), [ 255,  255,  255, 255] ),
+        "red":      m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,    0,    0, 255] ) ) ), [ 255,    0,    0, 255] ),
+        "lime":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  255,    0, 255] ) ) ), [   0,  255,    0, 255] ),
+        "blue":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,  255, 255] ) ) ), [   0,    0,  255, 255] ),
+        "yellow":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,  255,    0, 255] ) ) ), [ 255,  255,    0, 255] ),
+        "cyan":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  255,  255, 255] ) ) ), [   0,  255,  255, 255] ),
+        "magenta":  m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 255,    0,  255, 255] ) ) ), [ 255,    0,  255, 255] ),
+        "silver":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 192,  192,  192, 255] ) ) ), [ 192,  192,  192, 255] ),
+        "gray":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,  127,  127, 255] ) ) ), [ 127,  127,  127, 255] ),
+        "maroon":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,    0,    0, 255] ) ) ), [ 127,    0,    0, 255] ),
+        "olive":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,  127,    0, 255] ) ) ), [ 127,  127,    0, 255] ),
+        "green":    m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  127,    0, 255] ) ) ), [   0,  127,    0, 255] ),
+        "purple":   m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [ 127,    0,  127, 255] ) ) ), [ 127,    0,  127, 255] ),
+        "teal":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,  127,  127, 255] ) ) ), [   0,  127,  127, 255] ),
+        "navy":     m( Color.YUVA_RGBA( Color.RGBA_YUVA( new Uint8ClampedArray( [   0,    0,  127, 255] ) ) ), [   0,    0,  127, 255] ),
+    };
+    Color["LOW_PRECISION"] = false; // reset
+
     function m(valueArray, validArray) {
         return [].slice.call(valueArray).every(function(v, i) {
             var v  = parseFloat(v.toFixed(2));
